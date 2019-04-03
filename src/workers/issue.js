@@ -11,3 +11,11 @@ exports.processIssueOneByOne = () => {
         await IssueProcessActions.process()
     }, 0)
 }
+
+exports.testIssueOneByOne = () => {
+    const TestActions = require('../actions/TestActions')
+
+    setTimeout(async () => {
+        await TestActions.process()
+    }, 0)
+}

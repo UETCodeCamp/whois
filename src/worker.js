@@ -16,6 +16,7 @@ const _run = async () => {
 
     await issue.fetchIssues({owner, repo})
     issue.processIssueOneByOne()
+    issue.testIssueOneByOne()
 }
 
 setTimeout(async () => {
