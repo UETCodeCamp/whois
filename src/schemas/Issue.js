@@ -34,12 +34,23 @@ const Issue = new Schema({
         default: ''
     },
 
+    source: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+
     status: {
         type: String,
         trim: true,
         index: true,
-        enum: ['pending', 'processing', 'completed'],
+        enum: ['pending', 'processing', 'processed'],
         default: 'pending'
+    },
+
+    message: {
+        type: String,
+        default: ''
     },
 
     meta: {
