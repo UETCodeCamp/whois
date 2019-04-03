@@ -25,6 +25,7 @@ const _processOne = async (issue) => {
             {
                 $set: {
                     source: link,
+                    status: 'processing',
                     updated: Date.now(),
                 }
             }
