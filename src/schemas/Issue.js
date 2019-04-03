@@ -44,8 +44,13 @@ const Issue = new Schema({
         type: String,
         trim: true,
         index: true,
-        enum: ['pending', 'processing', 'processed'],
+        enum: ['pending', 'processing', 'compiled', 'processed'],
         default: 'pending'
+    },
+
+    output: {
+        type: String,
+        default: ''
     },
 
     message: {
