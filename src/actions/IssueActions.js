@@ -71,8 +71,6 @@ exports.fetchAllIssues = async ({owner = '', repo = ''}) => {
     const issues = await GitHubServices.issues({owner, repo})
 
     const {input, output} = await _getRequirement({owner, repo})
-    console.log('HELLLLLLLLL',{input, output})
-
     const {_id: contestId} = await ContestActions.getContest({owner, repo, input, output})
 
     await Promise.map(issues, async issue => {
