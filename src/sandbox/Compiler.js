@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const {exec} = require('child_process')
+const uuid = require('uuid/v4')
 
 const _readFile = async (file = '') => {
     return new Promise((resolve, reject) => {
@@ -34,9 +35,9 @@ const _parseJSON = async (content = '') => {
     }
 }
 
-const _runJSFile = async (file) => {
+const _runBash = async (command = '') => {
     return new Promise((resolve, reject) => {
-        exec(`node ${file}`,
+        exec(command,
             (error, stdout, stderr) => {
                 if (error) {
                     console.error(error)
@@ -56,7 +57,61 @@ const _runJSFile = async (file) => {
     })
 }
 
-exports.compiler = async (dir) => {
+const _writeFile = async (file, content) => {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(file, content, {encoding: 'utf8', flag: 'w'}, (err) => {
+            if (err) return reject(err)
+
+            return resolve(file)
+        })
+    })
+}
+
+const _beforeRunFile = async (dir, input = {}) => {
+    await _runBash(`cd ${dir} && yarn install`)
+    await _runBash(`cd ${dir} yarn add dotenv`)
+
+    const envFile = uuid() + '.env'
+    const envPath = path.join(dir, envFile)
+
+    const vInput = Object.assign({}, input)
+    let text = ''
+    for (let key in vInput) {
+        if (vInput.hasOwnProperty(key)) {
+            const value = vInput[key]
+
+            text += `${key}=${value}\n`
+        }
+    }
+
+    await _writeFile(envPath, text)
+
+    return envFile
+}
+
+const _runJSFile = async (file, configPath) => {
+    return new Promise((resolve, reject) => {
+        exec(`node -r dotenv/config ${file} dotenv_config_path=${configPath}`,
+            (error, stdout, stderr) => {
+                if (error) {
+                    console.error(error)
+
+                    return reject(error)
+                }
+
+                if (stderr) {
+                    const {code} = stderr
+                    const err = new Error(`Run failed with code: ${code}`)
+
+                    return reject(err)
+                }
+
+                return resolve(stdout)
+            })
+    })
+}
+
+exports.compiler = async (dir, input = {}) => {
     const packageJson = path.join(dir, 'package.json')
     const isExistPackage = await _isExist(packageJson)
     if (!isExistPackage) {
@@ -81,5 +136,8 @@ exports.compiler = async (dir) => {
         throw new Error('Main file is not Javascript file.')
     }
 
-    return await _runJSFile(mainFile)
+    const configFile = await _beforeRunFile(dir, input)
+    const configPath = path.join(dir, configFile)
+
+    return await _runJSFile(mainFile, configPath)
 }

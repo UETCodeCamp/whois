@@ -15,6 +15,11 @@ const Contest = new Schema({
         index: true,
     },
 
+    input: {
+        type: Schema.Types.Mixed,
+        default: {}
+    },
+
     updated: {
         type: Date,
         default: Date.now,

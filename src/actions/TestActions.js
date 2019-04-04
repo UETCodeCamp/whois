@@ -14,16 +14,28 @@ const _delay = async (time = 60000) => {
     })
 }
 
+const _getInputContest = async (contestId) => {
+    const Contest = getModel('Contest')
+    const contest = await Contest.findOne({_id: contestId}).lean()
+
+    if (!contest) return {}
+    const {input} = contest
+
+    return Object.assign({}, input)
+}
+
 const _processOne = async (issue) => {
-    const {_id, source} = issue
+    const {_id, source, contest} = issue
     const Issue = getModel('Issue')
+    const input = await _getInputContest(contest)
 
     try {
         const dir = await Git.clone(source)
 
         try {
-            const output = await Compiler.compiler(dir)
+            const output = await Compiler.compiler(dir, input)
             const trimmed = output ? (output + '').trim() : ''
+            console.log(`Repo: ${source}. Output:`, output)
 
             await Issue.updateOne(
                 {_id},
@@ -31,12 +43,11 @@ const _processOne = async (issue) => {
                     $set: {
                         output: trimmed,
                         status: 'compiled',
-                        updated: Date.now()
+                        updated: Date.now(),
+                        message: '',
                     }
                 }
             )
-
-            return true
         } catch (e) {
             await Git.clear(dir)
 
@@ -44,6 +55,8 @@ const _processOne = async (issue) => {
         }
 
         await Git.clear(dir)
+
+        return true
     } catch (error) {
         const {message} = error
 
