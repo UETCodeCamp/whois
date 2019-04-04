@@ -74,7 +74,7 @@ exports.getListTasks = async (contestId) => {
             select: ''
         })
         .sort({
-            created: -1
+            created: 1
         })
         .lean()
 
