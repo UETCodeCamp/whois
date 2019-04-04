@@ -3,6 +3,24 @@ const path = require('path')
 const uuid = require('uuid/v4')
 const rimraf = require('rimraf')
 const mkdirp = require('mkdirp')
+const request = require('request-promise-native')
+
+const _isExistLink = async (link = '') => {
+    try {
+        await request.get({
+            uri: link,
+            resolveWithFullResponse: true
+        })
+
+        return true
+    } catch (e) {
+        const {statusCode} = e
+
+        return statusCode < 300
+    }
+
+    return false
+}
 
 const _getDir = async () => {
     const name = process.env.DIR_SANDBOX || '../.temp'
@@ -36,6 +54,11 @@ exports.clone = async (source = '') => {
         throw new Error('Source not found.')
     }
 
+    const isExist = await _isExistLink(source)
+    if (!isExist) {
+        throw new Error('Link source not found.')
+    }
+
     const dir = await _getDir()
     const git = simpleGit(dir)
     const localDir = uuid()
@@ -50,10 +73,13 @@ exports.clone = async (source = '') => {
 
         return pathLocal
     } catch (e) {
-        console.error(e)
+        console.error('Clone error', e)
 
         throw e
     }
+
+
+    return true
 }
 
 exports.clear = _clear

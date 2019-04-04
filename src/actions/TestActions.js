@@ -14,23 +14,29 @@ const _delay = async (time = 60000) => {
     })
 }
 
-const _getInputContest = async (contestId) => {
+const _getContestRequirement = async (contestId) => {
     const Contest = getModel('Contest')
     const contest = await Contest.findOne({_id: contestId}).lean()
 
-    if (!contest) return {}
-    const {input} = contest
+    if (!contest) return {input: {}, output: ''}
+    const {input, output} = contest
 
-    return Object.assign({}, input)
+    const inp = Object.assign({}, input)
+
+    return {
+        input: inp,
+        output: output || '',
+    }
 }
 
 const _processOne = async (issue) => {
     const {_id, source, contest} = issue
     const Issue = getModel('Issue')
-    const input = await _getInputContest(contest)
+    const {input, output: expectedOutput} = await _getContestRequirement(contest)
 
     try {
         const dir = await Git.clone(source)
+        console.log({expectedOutput})
 
         try {
             const output = await Compiler.compiler(dir, input)
