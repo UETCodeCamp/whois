@@ -49,8 +49,8 @@ const Issue = new Schema({
     },
 
     output: {
-        type: String,
-        default: ''
+        type: Schema.Types.Mixed,
+        default: {}
     },
 
     message: {

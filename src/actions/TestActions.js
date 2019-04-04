@@ -1,6 +1,7 @@
 const {getModel} = require('../connections/database')
 const Git = require('../sandbox/Git')
 const Compiler = require('../sandbox/Compiler')
+const TaskActions = require('../actions/TaskActions')
 
 const _getOneIssue = async () => {
     const Issue = getModel('Issue')
@@ -29,31 +30,57 @@ const _getContestRequirement = async (contestId) => {
     }
 }
 
+const _is_pass = (result = {}, expectation = {}) => {
+    const {text, texts} = Object.assign({}, result)
+    const {text: text2, texts: texts2} = Object.assign({}, expectation)
+
+    if (text2) {
+        return text === text2
+    }
+
+    const arr1 = Array.isArray(texts) ? texts : []
+    const arr2 = Array.isArray(texts2) ? texts2 : []
+
+    if (!arr1.length || !arr2.length || arr1.length !== arr2.length) return false
+
+    let is_pass= true
+    arr1.forEach((text1, index1) => {
+        if (text1 !== arr2[index1]) {
+            is_pass = false
+        }
+    })
+
+    return is_pass
+}
+
 const _processOne = async (issue) => {
-    const {_id, source, contest} = issue
+    const {_id, source, contest, camper} = issue
     const Issue = getModel('Issue')
     const {input, output: expectedOutput} = await _getContestRequirement(contest)
 
     try {
         const dir = await Git.clone(source)
-        console.log({expectedOutput})
 
         try {
             const output = await Compiler.compiler(dir, input)
-            const trimmed = output ? (output + '').trim() : ''
-            console.log(`Repo: ${source}. Output:`, output)
+            console.log(`Repo: ${source}. Output:`, JSON.stringify(output))
 
             await Issue.updateOne(
                 {_id},
                 {
                     $set: {
-                        output: trimmed,
+                        output: Object.assign({}, output),
                         status: 'compiled',
                         updated: Date.now(),
                         message: '',
                     }
                 }
             )
+
+            const is_pass = _is_pass(output, expectedOutput)
+            console.log({is_pass})
+            const {_id: taskId} = await TaskActions.getTask({contest, camper, is_pass})
+            await TaskActions.updateTask(taskId, {is_pass, updated: Date.now()})
         } catch (e) {
             await Git.clear(dir)
 

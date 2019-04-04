@@ -111,6 +111,19 @@ const _runJSFile = async (file, configPath) => {
     })
 }
 
+const _parseStdOut = (content = '') => {
+    const trimmed = content ? (content + '').trim() : ''
+    if (!trimmed) return {text: ''}
+
+    const arr = content.split('\n')
+    const texts = arr.map(text => text ? (text + '').trim() : '')
+        .filter(text => text)
+
+    return {
+        texts
+    }
+}
+
 exports.compiler = async (dir, input = {}) => {
     const packageJson = path.join(dir, 'package.json')
     const isExistPackage = await _isExist(packageJson)
@@ -138,6 +151,7 @@ exports.compiler = async (dir, input = {}) => {
 
     const configFile = await _beforeRunFile(dir, input)
     const configPath = path.join(dir, configFile)
+    const out = await _runJSFile(mainFile, configPath)
 
-    return await _runJSFile(mainFile, configPath)
+    return _parseStdOut(out)
 }

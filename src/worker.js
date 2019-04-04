@@ -1,20 +1,25 @@
 const Schedule = require('node-schedule')
 const {EVERY_MINUTE} = require('./constants/Crontab')
 
-exports.register = async () => {
+const _register = async () => {
     console.log('Register cron jobs.')
 
     Schedule.scheduleJob(EVERY_MINUTE, async () => {
-        await _run()
+        const owner = 'tutv'
+        const repo = 'tets-whois'
+        const issue = require('./workers/issue')
+        await issue.fetchIssues({owner, repo})
     })
 }
 
 const _run = async () => {
+    await _register()
+
     const owner = 'tutv'
     const repo = 'tets-whois'
     const issue = require('./workers/issue')
-
     await issue.fetchIssues({owner, repo})
+
     issue.processIssueOneByOne()
     issue.testIssueOneByOne()
 }

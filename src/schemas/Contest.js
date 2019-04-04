@@ -21,8 +21,8 @@ const Contest = new Schema({
     },
 
     output: {
-        type: String,
-        default: ''
+        type: Schema.Types.Mixed,
+        default: {}
     },
 
     updated: {
