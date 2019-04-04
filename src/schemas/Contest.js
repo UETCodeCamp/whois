@@ -20,6 +20,11 @@ const Contest = new Schema({
         default: {}
     },
 
+    output: {
+        type: String,
+        default: ''
+    },
+
     updated: {
         type: Date,
         default: Date.now,

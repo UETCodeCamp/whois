@@ -52,8 +52,8 @@ const _process = async () => {
     const issue = await _getOneIssue()
 
     if (!issue) {
-        console.log('No issue. Waiting...')
-        await _delay(60000)
+        console.log('No pending issue. Waiting...')
+        await _delay(10000)
 
         return _process()
     }

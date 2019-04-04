@@ -13,7 +13,6 @@ const _getConnection = connection => () => {
 }
 
 const _getModel = connection => (collection = '') => {
-
     try {
         const Schema = require(`../schemas/${collection}`)
 
