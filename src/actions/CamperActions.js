@@ -2,7 +2,7 @@ const {getModel} = require('../connections/database')
 
 exports.getCamper = async ({username = '', github_id = ''}) => {
     const Camper = getModel('Camper')
-    const exist = await Camper.findOne({username}).lean()
+    const exist = await Camper.findOne({github_id}).lean()
     if (exist) return exist
 
     const newCamper = new Camper({

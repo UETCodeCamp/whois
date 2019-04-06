@@ -23,14 +23,8 @@ const _register = async () => {
 
 const _run = async () => {
     await _register()
-    const {owner, repo} = _getCurrentContest()
-
-    console.log('Owner', owner)
-    console.log('Repo', repo)
 
     const issue = require('./workers/issue')
-    await issue.fetchIssues({owner, repo})
-
     issue.processIssueOneByOne()
     issue.testIssueOneByOne()
 }

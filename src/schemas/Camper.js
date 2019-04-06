@@ -11,6 +11,7 @@ const Camper = new Schema({
         type: String,
         index: true,
         default: '',
+        unique: true,
     },
 
     display_name: {
