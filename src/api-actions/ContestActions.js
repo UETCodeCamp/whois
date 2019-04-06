@@ -78,6 +78,9 @@ exports.getListTasks = async (contestId) => {
         })
         .lean()
 
+    const sortedTasks = tasks.sort((taskOne, taskTwo) => {
+        const {status} = taskOne
+    })
 
     return {
         tasks,

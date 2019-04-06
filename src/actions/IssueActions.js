@@ -45,7 +45,7 @@ const _getRequirement = async ({owner, repo}) => {
 
     const _getFileJSON = async (url) => {
         try {
-            const content = await request(url)
+            const content = await request(`${url}?r=${Date.now()}`)
             if (!content) {
                 return {}
             }
