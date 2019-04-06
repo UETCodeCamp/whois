@@ -3,6 +3,7 @@
 
 ### Deployment
 
+Create a file named is: `production.env`:
 ```
 GITHUB_TOKEN=
 PORT=2000
