@@ -12,6 +12,9 @@ router.get('/contests/:id', contest.getContestDetail)
 router.get('/contests/:id/tasks', contest.getListTasks)
 router.get('/contests/:id/issues', contest.getListIssues)
 
+
+router.post('/runners/submit', contest.getListIssues)
+
 /**
  * 404 page.
  */

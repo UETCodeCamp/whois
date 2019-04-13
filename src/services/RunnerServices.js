@@ -22,7 +22,7 @@ exports.request = async (job = {}) => {
 
         return true
     } catch (e) {
-        console.log('request failed.', e)
+        console.error('Request running job failed.', e.message)
 
         return false
     }

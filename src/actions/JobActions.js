@@ -17,7 +17,6 @@ exports.isFree = async () => {
         console.log('System is processing a job...')
 
         return false
-
     }
 
     return true
@@ -42,6 +41,10 @@ exports.runNextJob = async () => {
     const {tester_repo, student_repo, _id: jobId} = nextJob
     const textId = jobId.toString ? jobId.toString() : jobId
 
+    console.log('Request running job:', textId)
+    console.log('Student repo:', student_repo)
+    console.log('Tester repo:', tester_repo)
+
     try {
         const result = await RunnerServices.request({
             id: textId,
@@ -64,7 +67,7 @@ exports.runNextJob = async () => {
             )
         }
     } catch (e) {
-        console.log('Request job error:', e)
+        console.error('Request job error:', e.message)
     }
 
     return true
