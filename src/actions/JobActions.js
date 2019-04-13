@@ -4,7 +4,7 @@ const moment = require('moment')
 
 exports.isFree = async () => {
     const Job = getModel('Job')
-    const oneHourAgo = moment().subtract(1, 'hour')
+    const oneHourAgo = moment().subtract(5, 'minutes')
 
     const processingJob = await Job.findOne({
         status: 'processing',
