@@ -17,7 +17,7 @@ const _syncContests = async () => {
 
     try {
         await contest.syncAllContests()
-        await _delay(30000)
+        await _delay(5000)
 
         return _syncContests()
     } catch (error) {
@@ -37,6 +37,7 @@ const _register = async () => {
         await issue.addIssuesToQueue()
     })
 
+    await job.processJob()
     await _syncContests()
 }
 
