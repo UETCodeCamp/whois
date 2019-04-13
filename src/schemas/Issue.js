@@ -87,6 +87,6 @@ const Issue = new Schema({
     },
 })
 
-Issue.index({status: 1, is_parsed: true, is_queued: true})
+Issue.index({status: 1, is_parsed: 1, is_queued: 1})
 
 module.exports = Issue
