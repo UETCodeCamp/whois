@@ -6,8 +6,9 @@ exports.createContest = (req, res) => {
     const args = Object.assign({}, req.body)
     const headers = Object.assign({}, req.headers)
     const password = headers['x-password'] || ''
+    const requiredPassword = process.env.PASSWORD_MENTOR || 'i_am_mentor'
 
-    if (password !== 'i_am_mentor') {
+    if (password !== requiredPassword) {
         return res.send({
             success: false,
             message: 'Password is incorrect.'
