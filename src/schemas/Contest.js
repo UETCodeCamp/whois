@@ -15,14 +15,17 @@ const Contest = new Schema({
         index: true,
     },
 
-    input: {
-        type: Schema.Types.Mixed,
-        default: {}
+    status: {
+        type: String,
+        default: 'active',
+        index: true,
     },
 
-    output: {
-        type: Schema.Types.Mixed,
-        default: {}
+    deadline: {
+        type: Date,
+        default: () => {
+            return Date.now() + 7 * 24 * 3600 * 1000
+        }
     },
 
     updated: {
