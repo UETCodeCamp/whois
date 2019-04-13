@@ -50,6 +50,11 @@ const Job = new Schema({
         default: {}
     },
 
+    submitted: {
+        type: Date,
+        index: true,
+    },
+
     updated: {
         type: Date,
         default: Date.now,

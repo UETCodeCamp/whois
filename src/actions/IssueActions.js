@@ -73,7 +73,7 @@ exports.parseIssues = async () => {
 
 const _addToQueue = async (issue) => {
     const Job = getModel('Job')
-    const {_id: issueId, contest, source} = issue
+    const {_id: issueId, contest, source, created} = issue
     const {owner, repo} = Object.assign({}, contest)
 
     if (!owner || !repo) return false
@@ -88,6 +88,7 @@ const _addToQueue = async (issue) => {
         student_repo: source,
         tester_repo,
         status: 'pending',
+        submitted: created
     })
 
     const doc = await newJob.save()
