@@ -48,7 +48,7 @@ const _validateDeadline = deadline => {
         throw new Error('Deadline must be required.')
     }
 
-    const deadlineMoment = moment(deadline, 'dd/MM/YYYY')
+    const deadlineMoment = moment(deadline, 'DD/MM/YYYY')
     if (!deadlineMoment.isValid()) {
         throw new Error('Deadline time is invalid.')
     }
