@@ -32,7 +32,7 @@ exports.runNextJob = async () => {
             status: 'pending'
         })
         .limit(1)
-        .sort({created: -1})
+        .sort({created: 1})
         .lean()
 
     if (!jobs || !jobs.length) {
