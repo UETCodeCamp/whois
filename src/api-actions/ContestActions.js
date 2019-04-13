@@ -1,4 +1,5 @@
 const {getModel} = require('../connections/database')
+const LinkParser = require('../services/LinkParser')
 
 const _validateArgs = (args = {}) => {
     const {page, limit} = Object.assign({}, args)
@@ -57,7 +58,10 @@ exports.getContestDetail = async (contestId) => {
         throw new Error('Contest not found.')
     }
 
-    return contest
+    const {owner, repo} = contest
+    const url = LinkParser.getFulLink({owner, repo})
+
+    return Object.assign({}, contest, {url})
 }
 
 exports.getListTasks = async (contestId) => {
