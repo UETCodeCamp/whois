@@ -17,7 +17,7 @@ exports.syncActiveContests = async () => {
     const contests = await Contest.find({
         status: 'active',
         deadline: {
-            $lt: Date.now()
+            $gt: Date.now()
         }
     })
 
