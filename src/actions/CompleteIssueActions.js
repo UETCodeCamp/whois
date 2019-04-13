@@ -1,5 +1,6 @@
 const {getModel} = require('../connections/database')
 const TaskActions = require('./TaskActions')
+const EventServices = require('../services/EventServices')
 
 exports.completeIssueWithJob = async (job) => {
     const {is_pass, message, issue: issueId} = Object.assign({}, job)
@@ -24,6 +25,8 @@ exports.completeIssueWithJob = async (job) => {
 
     const updatedIssue = await Issue.findOne({_id: issueId}).lean()
     await TaskActions.updateTaskByIssue(updatedIssue)
+
+    EventServices.emit('ISSUE_COMPLETED', updatedIssue)
 
     return true
 }

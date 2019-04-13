@@ -1,6 +1,5 @@
 const {getModel} = require('../connections/database')
 const CompleteIssueActions = require('./CompleteIssueActions')
-const EventServices = require('../services/EventServices')
 
 const _validateArgs = (args = {}) => {
     const {id, result} = Object.assign({}, args)
@@ -48,7 +47,7 @@ exports.submitResult = async (args = {}) => {
     )
 
     const updatedJob = await Job.findOne({_id: job._id}).lean()
-    EventServices.emit('JOB_SUBMITTED', updatedJob)
+    await CompleteIssueActions.completeIssueWithJob(updatedJob)
 
     return true
 }
