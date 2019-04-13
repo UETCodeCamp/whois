@@ -46,6 +46,11 @@ const Issue = new Schema({
         index: true,
     },
 
+    is_queued: {
+        type: Boolean,
+        default: false,
+    },
+
     is_pass: {
         type: Boolean,
         default: false,
@@ -82,5 +87,6 @@ const Issue = new Schema({
     },
 })
 
+Issue.index({status: 1, is_parsed: true, is_queued: true})
 
 module.exports = Issue

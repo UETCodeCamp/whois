@@ -78,7 +78,6 @@ const _addToQueue = async (issue) => {
 
     if (!owner || !repo) return false
 
-
     const exist = await Job.findOne({issue: issueId}).lean()
     if (exist) return true
 
@@ -92,6 +91,18 @@ const _addToQueue = async (issue) => {
     })
 
     const doc = await newJob.save()
+
+    const Issue = getModel('Issue')
+    await Issue.updateOne(
+        {_id: issueId},
+        {
+            $set: {
+                is_queued: true,
+                updated: Date.now(),
+            }
+        }
+    )
+
     const object = doc.toJSON()
     EventServices.emit('JOB_CREATED', object)
 
@@ -121,7 +132,13 @@ exports.addIssuesToQueue = async () => {
     const Contest = getModel('Contest')
 
     const issues = await Issue
-        .find({status: 'pending', is_parsed: true})
+        .find({
+            status: 'pending',
+            is_parsed: true,
+            is_queued: {
+                $ne: true
+            }
+        })
         .populate({
             path: 'contest',
             model: Contest,
