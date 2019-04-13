@@ -54,7 +54,7 @@ exports.parseIssue = async (issue) => {
 
 exports.markProcessing = async (issueId) => {
     const Issue = getModel('Issue')
-    const issue = await Issue.updateOne({_id: issueId}).lean()
+    const issue = await Issue.findOne({_id: issueId}).lean()
 
     if (!issue) {
         throw new Error('Issue not found.')
