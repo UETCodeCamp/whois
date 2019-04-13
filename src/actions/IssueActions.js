@@ -1,6 +1,7 @@
 const {getModel} = require('../connections/database')
 const GitHubServices = require('../services/GitHubServices')
-const CamperActions = require('../actions/CamperActions')
+const CamperActions = require('./CamperActions')
+const IssueProcessActions = require('./IssueProcessActions')
 const Promise = require('bluebird')
 const moment = require('moment')
 
@@ -39,6 +40,26 @@ exports.fetchAllIssues = async (contest) => {
 
     await Promise.map(issues, async issue => {
         return _saveIssue(contestId, issue)
+    }, {concurrency: 1})
+
+    return true
+}
+
+exports.parseIssues = async () => {
+    const Issue = getModel('Issue')
+
+    const issues = await Issue.find({
+        is_parsed: {
+            $ne: true
+        }
+    }).lean()
+
+    console.log('Parsing issues:', issues.length)
+
+    await Promise.map(issues, async issue => {
+        await IssueProcessActions.parseIssue(issue)
+
+        return true
     }, {concurrency: 1})
 
     return true

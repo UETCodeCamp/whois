@@ -40,17 +40,18 @@ const Issue = new Schema({
         default: ''
     },
 
+    is_parsed: {
+        type: Boolean,
+        default: false,
+        index: true,
+    },
+
     status: {
         type: String,
         trim: true,
         index: true,
         enum: ['pending', 'processing', 'compiled', 'processed'],
         default: 'pending'
-    },
-
-    output: {
-        type: Schema.Types.Mixed,
-        default: {}
     },
 
     message: {

@@ -20,6 +20,10 @@ exports.testIssueOneByOne = () => {
     }, 0)
 }
 
-exports.syncActiveContests = async () => {
 
+exports.parseAllIssues = async () => {
+    await IssueActions.parseIssues()
+
+    return true
 }
+

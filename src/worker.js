@@ -1,4 +1,7 @@
+const scheduler = require('node-schedule')
+const {EVERY_FIVE_MINUTES} = require('./constants/Crontab')
 const contest = require('./workers/contest')
+const issue = require('./workers/issue')
 
 const _delay = async (time = 1000) => {
     console.log(`Delay ${time} ms...`)
@@ -24,6 +27,10 @@ const _syncContests = async () => {
 }
 
 const _register = async () => {
+    scheduler.scheduleJob(EVERY_FIVE_MINUTES, async () => {
+        await issue.parseAllIssues()
+    })
+
     await _syncContests()
 }
 

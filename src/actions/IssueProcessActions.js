@@ -1,18 +1,6 @@
 const {getModel} = require('../connections/database')
 const LinkParser = require('../services/LinkParser')
 
-const _getOneIssue = async () => {
-    const Issue = getModel('Issue')
-
-    return await Issue.findOne({status: 'pending'}).sort({created: -1}).lean()
-}
-
-const _delay = async (time = 60000) => {
-    return new Promise(resolve => {
-        setTimeout(resolve, time)
-    })
-}
-
 const _processOne = async (issue) => {
     const {_id, body} = issue
     const Issue = getModel('Issue')
@@ -25,7 +13,7 @@ const _processOne = async (issue) => {
             {
                 $set: {
                     source: link,
-                    status: 'processing',
+                    is_parsed: true,
                     updated: Date.now(),
                 }
             }
@@ -39,35 +27,27 @@ const _processOne = async (issue) => {
             },
             {
                 $set: {
-                    status: 'processed',
+                    is_parsed: true,
                     message,
                     updated: Date.now(),
                 }
             }
         )
     }
+
+    return true
 }
 
-const _process = async () => {
-    const issue = await _getOneIssue()
+exports.parseIssue = async (issue) => {
+    console.log(`Parsing issue "${issue.title}"...`, )
 
-    if (!issue) {
-        console.log('No pending issue. Waiting...')
-        await _delay(10000)
-
-        return _process()
-    }
-
-    await _processOne(issue)
-    await _delay(1000)
-
-    return _process()
-}
-
-exports.process = async () => {
     try {
-        await _process()
+        await _processOne(issue)
     } catch (e) {
         console.error('Processing issue has error:', e)
+
+        return false
     }
+
+    return true
 }
