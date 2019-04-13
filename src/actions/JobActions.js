@@ -1,8 +1,19 @@
 const {getModel} = require('../connections/database')
 const RunnerServices = require('../services/RunnerServices')
+const moment = require('moment')
 
 exports.isFree = async () => {
-    return true
+    const Job = getModel('Job')
+    const oneHourAgo = moment().subtract(1, 'hour')
+
+    const processingJob = await Job.findOne({
+        status: 'processing',
+        updated: {
+            $gt: oneHourAgo.valueOf()
+        }
+    }).lean()
+
+    return !processingJob
 }
 
 exports.runNextJob = async () => {
