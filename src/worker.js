@@ -37,11 +37,11 @@ const _register = async () => {
         await issue.addIssuesToQueue()
     })
 
+    await _syncContests()
     await issue.parseAllIssues()
     await issue.addIssuesToQueue()
 
     await job.processJob()
-    await _syncContests()
 }
 
 const _run = async () => {
