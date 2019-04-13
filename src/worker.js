@@ -1,5 +1,6 @@
 const Schedule = require('node-schedule')
 const {EVERY_MINUTE} = require('./constants/Crontab')
+const contest = require('./workers/contest')
 
 const _getCurrentContest = () => {
     const repo = process.env.GITHUB_REPO || 'tets-whois'
@@ -11,23 +12,39 @@ const _getCurrentContest = () => {
     }
 }
 
-const _register = async () => {
-    console.log('Register cron jobs.')
+const _delay = async (time = 1000) => {
+    console.log(`Delay ${time} ms...`)
 
-    Schedule.scheduleJob(EVERY_MINUTE, async () => {
-        const {owner, repo} = _getCurrentContest()
-        const issue = require('./workers/issue')
-        await issue.fetchIssues({owner, repo})
+    return new Promise(resolve => {
+        setTimeout(resolve, time)
     })
 }
 
-const _run = async () => {
-    await _register()
+const _syncContests = async () => {
+    console.log('Start syncing contests.')
 
-    const issue = require('./workers/issue')
-    issue.processIssueOneByOne()
-    issue.testIssueOneByOne()
+    try {
+        await contest.syncAllContests()
+        await _delay(5000)
+
+        return _syncContests()
+    } catch (error) {
+        await _delay(30000)
+
+        return _syncContests()
+    }
 }
+
+const _register = async () => {
+    await _syncContests()
+}
+
+const _run = async () => {
+    console.log('Workers is running...')
+
+    await _register()
+}
+
 
 setTimeout(async () => {
     await _run()

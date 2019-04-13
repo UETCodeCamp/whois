@@ -19,3 +19,7 @@ exports.testIssueOneByOne = () => {
         await TestActions.process()
     }, 0)
 }
+
+exports.syncActiveContests = async () => {
+
+}
