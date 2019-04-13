@@ -10,3 +10,14 @@ exports.processJob = async () => {
         console.log(e)
     }
 }
+
+exports.handleAfterCreatingNewJob = async () => {
+    try {
+        const isFree = await JobActions.isFree()
+        if (!isFree) return false
+
+        await JobActions.runNextJob()
+    } catch (e) {
+        console.log(e)
+    }
+}

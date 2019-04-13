@@ -5,6 +5,8 @@ const CamperActions = require('./CamperActions')
 const IssueProcessActions = require('./IssueProcessActions')
 const Promise = require('bluebird')
 const moment = require('moment')
+const EventServices = require('../services/EventServices')
+const delay = require('../helpers/delay')
 
 const _saveIssue = async (contestId, issue) => {
     const {id, title, body, user, created_at} = issue
@@ -29,14 +31,17 @@ const _saveIssue = async (contestId, issue) => {
     })
 
     const doc = await newIssue.save()
+    const object = doc.toJSON()
 
-    return doc.toJSON()
+    EventServices.emit('ISSUE_CREATED', object)
+    await delay(1000)
+
+    return object
 }
 
 exports.fetchAllIssues = async (contest) => {
     const {_id: contestId, owner, repo} = contest
     const issues = await GitHubServices.issues({owner, repo})
-
     console.log(`Total issues of ${owner}/${repo}:`, issues.length)
 
     await Promise.map(issues, async issue => {
@@ -86,9 +91,29 @@ const _addToQueue = async (issue) => {
         status: 'pending',
     })
 
-    await newJob.save()
+    const doc = await newJob.save()
+    const object = doc.toJSON()
+    EventServices.emit('JOB_CREATED', object)
 
     return true
+}
+
+exports.addIssueToQueue = async (issue) => {
+    const Issue = getModel('Issue')
+    const Contest = getModel('Contest')
+
+    const doc = await Issue.findOne({_id: issue._id})
+        .populate({
+            path: 'contest',
+            model: Contest,
+        })
+        .lean()
+
+    if (!doc) {
+        throw new Error('Issue not found.')
+    }
+
+    return _addToQueue(doc)
 }
 
 exports.addIssuesToQueue = async () => {

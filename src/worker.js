@@ -1,5 +1,5 @@
 const scheduler = require('node-schedule')
-const {EVERY_FIVE_MINUTES, EVERY_MINUTE} = require('./constants/Crontab')
+const {EVERY_MINUTE} = require('./constants/Crontab')
 const contest = require('./workers/contest')
 const issue = require('./workers/issue')
 const job = require('./workers/job')
@@ -38,19 +38,25 @@ const _register = async () => {
     })
 
     await _syncContests()
-    await issue.parseAllIssues()
-    await issue.addIssuesToQueue()
+}
 
-    await job.processJob()
+const EventServices = require('./services/EventServices')
+const _subscribe = async () => {
+    EventServices.on('ISSUE_CREATED', issue.handleAfterCreatingIssue)
+    EventServices.on('ISSUE_URL_PARSED', issue.handleAfterParsingIssue)
+    EventServices.on('JOB_CREATED', job.handleAfterCreatingNewJob)
+    EventServices.on('JOB_PROCESSING', job.handleAfterCreatingNewJob)
 }
 
 const _run = async () => {
     console.log('Workers is running...')
 
+    await _subscribe()
     await _register()
 }
 
-
-setTimeout(async () => {
-    await _run()
-}, 0)
+exports.run = () => {
+    setTimeout(async () => {
+        await _run()
+    }, 0)
+}

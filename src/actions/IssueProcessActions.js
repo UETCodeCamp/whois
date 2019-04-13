@@ -1,9 +1,12 @@
 const {getModel} = require('../connections/database')
 const LinkParser = require('../services/LinkParser')
+const EventServices = require('../services/EventServices')
 
-const _processOne = async (issue) => {
+const _parseOne = async (issue) => {
     const {_id, body} = issue
     const Issue = getModel('Issue')
+
+    let success = false
 
     try {
         const link = LinkParser.parseLinkGithub(body)
@@ -18,7 +21,10 @@ const _processOne = async (issue) => {
                 }
             }
         )
+
+        success = true
     } catch (error) {
+        success = false
         const {message} = error
 
         await Issue.updateOne(
@@ -35,6 +41,8 @@ const _processOne = async (issue) => {
         )
     }
 
+    EventServices.emit('ISSUE_URL_PARSED', {success, issue})
+
     return true
 }
 
@@ -42,7 +50,7 @@ exports.parseIssue = async (issue) => {
     console.log(`Parsing issue "${issue.title}"...`,)
 
     try {
-        await _processOne(issue)
+        await _parseOne(issue)
     } catch (e) {
         console.error('Processing issue has error:', e)
 
@@ -52,7 +60,7 @@ exports.parseIssue = async (issue) => {
     return true
 }
 
-exports.markProcessing = async (issueId) => {
+const _markProcessing = async (issueId) => {
     const Issue = getModel('Issue')
     const issue = await Issue.findOne({_id: issueId}).lean()
 
@@ -69,6 +77,16 @@ exports.markProcessing = async (issueId) => {
             }
         }
     )
+
+    return true
+}
+
+exports.markProcessing = _markProcessing
+
+exports.handleJobProcessing = async job => {
+    const {issue} = Object.assign({}, job)
+
+    if (issue) await _markProcessing(issue)
 
     return true
 }

@@ -5,7 +5,6 @@ const IssueActions = require('./IssueActions')
 const _syncIssues = async (contest) => {
     const {owner, repo} = contest
     console.log(`Syncing all issues of repo: ${owner}/${repo}...`)
-
     await IssueActions.fetchAllIssues(contest)
 
     return true

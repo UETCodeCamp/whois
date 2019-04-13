@@ -9,4 +9,4 @@ require('dotenv').config({
 /**
  * Run worker.
  */
-require('./src/worker')
+require('./src/worker').run()

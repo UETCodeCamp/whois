@@ -3,7 +3,6 @@ const CompleteIssueActions = require('./CompleteIssueActions')
 
 const _validateArgs = (args = {}) => {
     const {id, result} = Object.assign({}, args)
-
     const {is_pass, message, std_out, std_err} = Object.assign({}, result)
 
     return {

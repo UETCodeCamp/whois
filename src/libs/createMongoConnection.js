@@ -1,7 +1,7 @@
 const Mongoose = require('mongoose')
 
 if (process.env.NODE_ENV !== 'production') {
-    Mongoose.set('debug', true)
+    // Mongoose.set('debug', true)
 }
 
 Mongoose.set('useCreateIndex', true)

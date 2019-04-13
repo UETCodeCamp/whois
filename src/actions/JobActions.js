@@ -1,6 +1,7 @@
 const {getModel} = require('../connections/database')
 const RunnerServices = require('../services/RunnerServices')
 const IssueProcessActions = require('./IssueProcessActions')
+const EventServices = require('../services/EventServices')
 const moment = require('moment')
 
 exports.isFree = async () => {
@@ -66,6 +67,8 @@ exports.runNextJob = async () => {
                     }
                 }
             )
+
+            EventServices.emit('JOB_PROCESSING', nextJob)
 
             await IssueProcessActions.markProcessing(issue)
         }
