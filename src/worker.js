@@ -1,16 +1,4 @@
-const Schedule = require('node-schedule')
-const {EVERY_MINUTE} = require('./constants/Crontab')
 const contest = require('./workers/contest')
-
-const _getCurrentContest = () => {
-    const repo = process.env.GITHUB_REPO || 'tets-whois'
-    const owner = process.env.GITHUB_OWNER || 'tutv'
-
-    return {
-        repo,
-        owner
-    }
-}
 
 const _delay = async (time = 1000) => {
     console.log(`Delay ${time} ms...`)
