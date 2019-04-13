@@ -1,5 +1,6 @@
 const {getModel} = require('../connections/database')
 const RunnerServices = require('../services/RunnerServices')
+const IssueProcessActions = require('./IssueProcessActions')
 const moment = require('moment')
 
 exports.isFree = async () => {
@@ -38,7 +39,7 @@ exports.runNextJob = async () => {
         return true
     }
 
-    const {tester_repo, student_repo, _id: jobId} = nextJob
+    const {tester_repo, student_repo, _id: jobId, issue} = nextJob
     const textId = jobId.toString ? jobId.toString() : jobId
 
     console.log('Request running job:', textId)
@@ -65,6 +66,8 @@ exports.runNextJob = async () => {
                     }
                 }
             )
+
+            await IssueProcessActions.markProcessing(issue)
         }
     } catch (e) {
         console.error('Request job error:', e.message)

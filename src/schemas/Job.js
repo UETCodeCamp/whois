@@ -1,6 +1,6 @@
 const {Schema} = require('mongoose')
 
-const Task = new Schema({
+const Job = new Schema({
     issue: {
         type: Schema.Types.ObjectId,
         ref: 'Issue',
@@ -63,4 +63,4 @@ const Task = new Schema({
 })
 
 
-module.exports = Task
+module.exports = Job

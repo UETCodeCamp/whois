@@ -39,7 +39,7 @@ const _processOne = async (issue) => {
 }
 
 exports.parseIssue = async (issue) => {
-    console.log(`Parsing issue "${issue.title}"...`, )
+    console.log(`Parsing issue "${issue.title}"...`,)
 
     try {
         await _processOne(issue)
@@ -48,6 +48,27 @@ exports.parseIssue = async (issue) => {
 
         return false
     }
+
+    return true
+}
+
+exports.markProcessing = async (issueId) => {
+    const Issue = getModel('Issue')
+    const issue = await Issue.updateOne({_id: issueId}).lean()
+
+    if (!issue) {
+        throw new Error('Issue not found.')
+    }
+
+    await Issue.updateOne(
+        {_id: issueId},
+        {
+            $set: {
+                status: 'processing',
+                updated: Date.now(),
+            }
+        }
+    )
 
     return true
 }
