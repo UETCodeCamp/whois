@@ -14,7 +14,7 @@ exports.isFree = async () => {
     }).lean()
 
     if (processingJob) {
-        console.log('System is processing a job...')
+        console.log('System is processing a job with id:', processingJob._id)
 
         return false
     }
