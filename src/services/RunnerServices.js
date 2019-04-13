@@ -13,11 +13,12 @@ exports.request = async (job = {}) => {
             headers: {
                 'x-token': token
             },
-            data: {
+            body: {
                 id,
                 student_repo,
                 tester_repo,
-            }
+            },
+            json: true
         })
 
         return true
