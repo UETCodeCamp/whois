@@ -1,5 +1,6 @@
 const {getModel} = require('../connections/database')
 const GitHubServices = require('../services/GitHubServices')
+const LinkParser = require('../services/LinkParser')
 const CamperActions = require('./CamperActions')
 const IssueProcessActions = require('./IssueProcessActions')
 const Promise = require('bluebird')
@@ -58,6 +59,55 @@ exports.parseIssues = async () => {
 
     await Promise.map(issues, async issue => {
         await IssueProcessActions.parseIssue(issue)
+
+        return true
+    }, {concurrency: 1})
+
+    return true
+}
+
+const _addToQueue = async (issue) => {
+    const Job = getModel('Job')
+    const {_id: issueId, contest, source} = issue
+    const {owner, repo} = Object.assign({}, contest)
+
+    if (!owner || !repo) return false
+
+
+    const exist = await Job.findOne({issue: issueId}).lean()
+    if (exist) return true
+
+    const tester_repo = LinkParser.getFulLink({owner, repo})
+
+    const newJob = new Job({
+        issue: issueId,
+        student_repo: source,
+        tester_repo,
+        status: 'pending',
+    })
+
+    await newJob.save()
+
+    return true
+}
+
+exports.addIssuesToQueue = async () => {
+    const Issue = getModel('Issue')
+    const Contest = getModel('Contest')
+
+    const issues = await Issue
+        .find({status: 'pending', is_parsed: true})
+        .populate({
+            path: 'contest',
+            model: Contest,
+        })
+        .sort({created: 1})
+        .lean()
+
+    console.log('Add issues to queue:', issues.length)
+
+    await Promise.map(issues, async issue => {
+        await _addToQueue(issue)
 
         return true
     }, {concurrency: 1})

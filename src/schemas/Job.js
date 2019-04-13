@@ -8,9 +8,20 @@ const Task = new Schema({
         index: true,
     },
 
+    student_repo: {
+        type: String,
+        default: ''
+    },
+
+    tester_repo: {
+        type: String,
+        default: ''
+    },
+
     status: {
         type: String,
         index: true,
+        default: 'pending',
         trim: true,
     },
 

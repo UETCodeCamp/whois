@@ -31,7 +31,8 @@ const _register = async () => {
         await issue.parseAllIssues()
     })
 
-    await _syncContests()
+    await issue.addIssuesToQueue()
+    // await _syncContests()
 }
 
 const _run = async () => {

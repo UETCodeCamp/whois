@@ -17,3 +17,7 @@ exports.parseLinkGithub = (text = '') => {
 
     return vLink.indexOf('http') === -1 ? `https://${vLink}` : vLink
 }
+
+exports.getFulLink = ({owner, repo = ''}) => {
+    return `https://githbu.com/${owner}/${repo}`
+}
