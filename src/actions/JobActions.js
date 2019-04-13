@@ -27,19 +27,21 @@ exports.isFree = async () => {
 exports.runNextJob = async () => {
     const Job = getModel('Job')
 
-    const nextJob = await Job
-        .findOne({
+    const jobs = await Job
+        .find({
             status: 'pending'
         })
+        .limit(1)
         .sort({created: -1})
         .lean()
 
-    if (!nextJob) {
+    if (!jobs || !jobs.length) {
         console.log('There is no job to process.')
 
         return true
     }
 
+    const nextJob = jobs[0]
     const {tester_repo, student_repo, _id: jobId, issue} = nextJob
     const textId = jobId.toString ? jobId.toString() : jobId
 
