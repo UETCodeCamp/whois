@@ -5,7 +5,6 @@ exports.request = async (job = {}) => {
 
     const host = process.env.RUNNER_HOST || 'http://localhost:4000'
 
-
     try {
         const response = await request({
             baseUrl: host,
