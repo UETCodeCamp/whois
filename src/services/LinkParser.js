@@ -19,5 +19,5 @@ exports.parseLinkGithub = (text = '') => {
 }
 
 exports.getFulLink = ({owner, repo = ''}) => {
-    return `https://githbu.com/${owner}/${repo}`
+    return `https://github.com/${owner}/${repo}`
 }
