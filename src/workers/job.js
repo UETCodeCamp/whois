@@ -5,8 +5,6 @@ exports.processJob = async () => {
         const isFree = await JobActions.isFree()
 
         if (!isFree) {
-            console.log('System is processing a job...')
-
             return false
         }
 

@@ -13,7 +13,14 @@ exports.isFree = async () => {
         }
     }).lean()
 
-    return !processingJob
+    if (processingJob) {
+        console.log('System is processing a job...')
+
+        return false
+
+    }
+
+    return true
 }
 
 exports.runNextJob = async () => {
