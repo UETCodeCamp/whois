@@ -1,4 +1,5 @@
 const JobActions = require('../actions/JobActions')
+const CompleteIssueActions = require('../actions/CompleteIssueActions')
 
 exports.processJob = async () => {
     try {
@@ -11,13 +12,12 @@ exports.processJob = async () => {
     }
 }
 
-exports.handleAfterCreatingNewJob = async () => {
-    try {
-        const isFree = await JobActions.isFree()
-        if (!isFree) return false
+exports.handleAfterCreatingNewJob = async (job) => {
+    console.log('Created a job with id:', job._id)
+}
 
-        await JobActions.runNextJob()
-    } catch (e) {
-        console.log(e)
-    }
+exports.handleAfterJobSubmitted = async (job) => {
+    await CompleteIssueActions.completeIssueWithJob(job)
+
+    return true
 }

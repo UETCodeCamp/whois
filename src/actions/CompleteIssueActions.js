@@ -1,15 +1,14 @@
 const {getModel} = require('../connections/database')
 const TaskActions = require('./TaskActions')
 
-exports.completeIssue = async (issueId, result = {}) => {
-    const {is_pass, message} = Object.assign({}, result)
+exports.completeIssueWithJob = async (job) => {
+    const {is_pass, message, issue: issueId} = Object.assign({}, job)
 
     const Issue = getModel('Issue')
     const issue = await Issue.findOne({_id: issueId}).lean()
     if (!issue) {
         throw new Error('Issue not found.')
     }
-
 
     await Issue.updateOne(
         {_id: issueId},

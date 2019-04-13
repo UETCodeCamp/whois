@@ -4,7 +4,7 @@ exports.updateTaskByIssue = async (issue) => {
     const {is_pass, contest, camper} = issue
 
     const Task = getModel('Task')
-    const exist = await Task.findOne({contest}).lean()
+    const exist = await Task.findOne({contest, camper}).lean()
 
     if (exist) {
         await Task.updateOne(

@@ -45,7 +45,8 @@ const _subscribe = async () => {
     EventServices.on('ISSUE_CREATED', issue.handleAfterCreatingIssue)
     EventServices.on('ISSUE_URL_PARSED', issue.handleAfterParsingIssue)
     EventServices.on('JOB_CREATED', job.handleAfterCreatingNewJob)
-    EventServices.on('JOB_PROCESSING', job.handleAfterCreatingNewJob)
+    EventServices.on('JOB_PROCESSING', issue.handleJobProcessing)
+    EventServices.on('JOB_SUBMITTED', job.handleAfterJobSubmitted)
 }
 
 const _run = async () => {
