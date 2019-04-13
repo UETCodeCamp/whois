@@ -32,7 +32,7 @@ const _register = async () => {
         await job.processJob()
     })
 
-    scheduler.scheduleJob(EVERY_FIVE_MINUTES, async () => {
+    scheduler.scheduleJob(EVERY_MINUTE, async () => {
         await issue.parseAllIssues()
         await issue.addIssuesToQueue()
     })
