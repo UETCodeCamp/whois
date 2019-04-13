@@ -29,10 +29,10 @@ const _syncContests = async () => {
 const _register = async () => {
     scheduler.scheduleJob(EVERY_FIVE_MINUTES, async () => {
         await issue.parseAllIssues()
+        await issue.addIssuesToQueue()
     })
 
-    await issue.addIssuesToQueue()
-    // await _syncContests()
+    await _syncContests()
 }
 
 const _run = async () => {
