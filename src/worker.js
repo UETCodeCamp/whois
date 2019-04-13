@@ -17,11 +17,11 @@ const _syncContests = async () => {
 
     try {
         await contest.syncAllContests()
-        await _delay(5000)
+        await _delay(30000)
 
         return _syncContests()
     } catch (error) {
-        await _delay(30000)
+        await _delay(5 * 60 * 1000)
 
         return _syncContests()
     }
