@@ -74,7 +74,7 @@ exports.getListTasks = async (contestId) => {
             select: ''
         })
         .sort({
-            updated: 1
+            created: 1
         })
         .lean()
 
@@ -101,7 +101,7 @@ exports.getListIssues = async (contestId) => {
             select: ''
         })
         .sort({
-            created: -1
+            created: 1
         })
         .lean()
 
