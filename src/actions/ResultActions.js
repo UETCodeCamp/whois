@@ -1,4 +1,5 @@
 const {getModel} = require('../connections/database')
+const CompleteIssueActions = require('./CompleteIssueActions')
 
 const _validateArgs = (args = {}) => {
     const {id, result} = Object.assign({}, args)
@@ -30,8 +31,28 @@ exports.submitResult = async (args = {}) => {
         throw new Error('Job not found.')
     }
 
-    await Job.updateOne({
+    await Job.updateOne(
+        {
+            _id: job._id,
+        },
+        {
+            $set: {
+                is_pass,
+                message,
+                std_err,
+                std_out,
+                status: 'processed',
+                updated: Date.now(),
+            }
+        }
+    )
 
+    const {issue} = job
+    await CompleteIssueActions.completeIssue(issue, {
+        is_pass,
+        message,
+        std_err,
+        std_out,
     })
 
     return true

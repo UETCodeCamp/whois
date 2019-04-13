@@ -1,41 +1,32 @@
 const {getModel} = require('../connections/database')
 
-exports.getTask = async ({camper = '', contest = '', is_pass = false, message = ''}) => {
+exports.updateTaskByIssue = async (issue) => {
+    const {is_pass, contest, camper} = issue
+
     const Task = getModel('Task')
-    const exist = await Task.findOne({camper, contest}).lean()
+    const exist = await Task.findOne({contest}).lean()
+
     if (exist) {
-        return exist
-    }
+        await Task.updateOne(
+            {_id: exist._id},
+            {
+                $set: {
+                    is_pass,
+                    updated: Date.now()
+                }
+            }
+        )
 
-    const newCamper = new Task({
-        camper,
-        contest,
-        is_pass: !!is_pass,
-        message: message || ''
-    })
-    const doc = await newCamper.save()
-
-    return doc.toJSON()
-}
-
-exports.updateTask = async (id, updateData = {}) => {
-    const Task = getModel('Task')
-    const exist = await Task.findOne({_id: id}).lean()
-    if (!exist) {
-        throw new Error('Task not found.')
-    }
-
-    const updated = Object.assign({}, updateData)
-    if (!Object.keys(updated).length) {
         return true
     }
 
-    await Task.updateOne(
-        {_id: id},
-        {
-            $set: updated,
-        }
-    )
+    const newTask = new Task({
+        is_pass,
+        contest,
+        camper,
+    })
+
+    await newTask.save()
 
     return true
 }

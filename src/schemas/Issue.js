@@ -46,11 +46,17 @@ const Issue = new Schema({
         index: true,
     },
 
+    is_pass: {
+        type: Boolean,
+        default: false,
+        index: true,
+    },
+
     status: {
         type: String,
         trim: true,
         index: true,
-        enum: ['pending', 'processing', 'compiled', 'processed'],
+        enum: ['pending', 'processing', 'processed'],
         default: 'pending'
     },
 

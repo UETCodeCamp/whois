@@ -30,6 +30,11 @@ const Task = new Schema({
         default: false,
     },
 
+    message: {
+        type: String,
+        default: ''
+    },
+
     std_out: {
         type: String,
         default: ''

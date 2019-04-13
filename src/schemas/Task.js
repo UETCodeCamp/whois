@@ -21,16 +21,6 @@ const Task = new Schema({
         index: true
     },
 
-    message: {
-        type: String,
-        default: ''
-    },
-
-    meta: {
-        type: Schema.Types.Mixed,
-        default: {}
-    },
-
     updated: {
         type: Date,
         default: Date.now,
