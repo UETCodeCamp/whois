@@ -82,12 +82,20 @@ exports.getListTasks = async (contestId) => {
         })
         .lean()
 
-    const sortedTasks = tasks.sort((taskOne, taskTwo) => {
-        const {status} = taskOne
+    const vTasks = tasks.map((task) => {
+        const {camper} = task
+        if (!camper || !camper.username) return task
+
+
+        const {username} = camper
+        const url = `https://github.com/${username}`
+        const vCamper = Object.assign({}, camper, {url})
+
+        return Object.assign({}, task, {camper: vCamper})
     })
 
     return {
-        tasks,
+        tasks: vTasks,
     }
 }
 
