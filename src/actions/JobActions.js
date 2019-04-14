@@ -29,6 +29,8 @@ exports.isFree = async () => {
 }
 
 exports.checkStuckJobs = async () => {
+    console.log('Checking stuck jobs...')
+
     const Job = getModel('Job')
 
     const timeout = moment().subtract(5, 'minutes').valueOf()
@@ -43,6 +45,8 @@ exports.checkStuckJobs = async () => {
             updated: 1
         })
         .lean()
+
+    console.log('Stuck jobs:', stuckJobs.length)
 
     if (!stuckJobs || !stuckJobs.length) {
         return false
