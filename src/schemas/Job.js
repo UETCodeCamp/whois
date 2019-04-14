@@ -50,6 +50,11 @@ const Job = new Schema({
         default: {}
     },
 
+    retries: {
+        type: Number,
+        default: 0,
+    },
+
     submitted: {
         type: Date,
         index: true,

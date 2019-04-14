@@ -21,3 +21,9 @@ exports.handleAfterJobSubmitted = async (job) => {
 
     return true
 }
+
+exports.checkStuckJobs = async () => {
+    await JobActions.checkStuckJobs()
+
+    return true
+}

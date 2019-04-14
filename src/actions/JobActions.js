@@ -1,18 +1,22 @@
 const {getModel} = require('../connections/database')
 const RunnerServices = require('../services/RunnerServices')
 const IssueProcessActions = require('./IssueProcessActions')
+const CompleteIssueActions = require('./CompleteIssueActions')
 const EventServices = require('../services/EventServices')
 const moment = require('moment')
+const Promise = require('bluebird')
+
+const _getMaxRetries = () => {
+    const max = process.env.JOB_MAX_RETRIES || 5
+
+    return max > 0 ? parseInt(max, 10) : 5
+}
 
 exports.isFree = async () => {
     const Job = getModel('Job')
-    const oneHourAgo = moment().subtract(5, 'minutes')
 
     const processingJob = await Job.findOne({
         status: 'processing',
-        updated: {
-            $gt: oneHourAgo.valueOf()
-        }
     }).lean()
 
     if (processingJob) {
@@ -20,6 +24,58 @@ exports.isFree = async () => {
 
         return false
     }
+
+    return true
+}
+
+exports.checkStuckJobs = async () => {
+    const Job = getModel('Job')
+
+    const timeout = moment().subtract(5, 'minutes').valueOf()
+    const stuckJobs = await Job
+        .find({
+            status: 'processing',
+            updated: {
+                $lt: timeout
+            }
+        })
+        .lean()
+
+    if (!stuckJobs || !stuckJobs.length) {
+        return false
+    }
+
+    await Promise.map(stuckJobs, async job => {
+        const {_id, retries} = job
+        const currentRetries = retries >= 0 ? parseInt(retries, 10) : 0
+        const max = _getMaxRetries()
+
+        if (currentRetries >= max) {
+            await Job.updateOne({_id}, {
+                $set: {
+                    is_pass: false,
+                    status: 'processed',
+                    message: `Job failed after ${currentRetries} retries.`,
+                    updated: Date.now(),
+                }
+            })
+
+            const updated = await Job.findOne({_id}).lean()
+            await CompleteIssueActions.completeIssueWithJob(updated)
+
+            return true
+        }
+
+        await Job.updateOne({_id}, {
+            $set: {
+                retries: currentRetries + 1,
+                status: 'pending',
+                updated: Date.now(),
+            }
+        })
+
+        return true
+    }, {concurrency: 1})
 
     return true
 }

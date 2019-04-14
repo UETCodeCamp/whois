@@ -33,6 +33,10 @@ const _register = async () => {
     })
 
     scheduler.scheduleJob(EVERY_MINUTE, async () => {
+        await job.checkStuckJobs()
+    })
+
+    scheduler.scheduleJob(EVERY_MINUTE, async () => {
         await issue.parseAllIssues()
         await issue.addIssuesToQueue()
     })
