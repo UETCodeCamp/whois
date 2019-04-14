@@ -12,6 +12,9 @@ router.get('/contests/:id', contest.getContestDetail)
 router.get('/contests/:id/tasks', contest.getListTasks)
 router.get('/contests/:id/issues', contest.getListIssues)
 
+const job = require('./controllers/job')
+router.get('/jobs', job.getListOfJobs)
+
 const result = require('./controllers/result')
 router.post('/runners/submit', result.submit)
 
