@@ -39,6 +39,9 @@ exports.checkStuckJobs = async () => {
                 $lt: timeout
             }
         })
+        .sort({
+            updated: 1
+        })
         .lean()
 
     if (!stuckJobs || !stuckJobs.length) {
