@@ -3,7 +3,7 @@ const {getModel} = require('../connections/database')
 exports.getListJobs = async () => {
     const Jobs = getModel('Job')
 
-    const jobs = Jobs
+    const jobs = await Jobs
         .find({})
         .populate({
             path: 'issue',
