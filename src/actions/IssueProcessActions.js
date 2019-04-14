@@ -35,6 +35,7 @@ const _parseOne = async (issue) => {
                 $set: {
                     is_parsed: true,
                     message,
+                    status: 'processed',
                     updated: Date.now(),
                 }
             }
