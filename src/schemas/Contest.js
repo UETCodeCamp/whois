@@ -21,6 +21,11 @@ const Contest = new Schema({
         index: true,
     },
 
+    runner: {
+        type: String,
+        required: true,
+    },
+
     deadline: {
         type: Date,
         default: () => {

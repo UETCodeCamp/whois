@@ -6,7 +6,12 @@ const _getSecretKey = () => {
     return (secretKey + '').trim()
 }
 
-exports.request = async (job = {}) => {
+/**
+ * @param job
+ * @param runner
+ * @return {Promise<boolean>}
+ */
+exports.request = async (job = {}, runner = 'node-stdout') => {
     const {id, student_repo, tester_repo} = Object.assign({}, job)
 
     const host = process.env.RUNNER_HOST || 'http://localhost:4000'
@@ -15,7 +20,7 @@ exports.request = async (job = {}) => {
     try {
         const response = await request({
             baseUrl: host,
-            uri: `/run`,
+            uri: `/run/${runner || 'node-stdout'}`,
             method: 'POST',
             headers: {
                 'x-secret': secretKey

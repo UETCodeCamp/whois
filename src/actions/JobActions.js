@@ -108,20 +108,44 @@ exports.runNextJob = async () => {
     }
 
     const nextJob = jobs[0]
-    const {tester_repo, student_repo, _id: jobId, issue} = nextJob
+    const {tester_repo, student_repo, _id: jobId, issue: issueId} = nextJob
     const textId = jobId.toString ? jobId.toString() : jobId
+
+    const Issue = getModel('Issue')
+    const Contest = getModel('Contest')
+    const issue = await Issue
+        .findOne({_id: issueId})
+        .populate({
+            path: 'contest',
+            model: Contest
+        })
+        .lean()
+
+    let runner = 'node-stdout'
+    if (issue) {
+        const {contest} = issue
+        const {runner: runnerType} = Object.assign({}, contest)
+
+        if (runner) {
+            runner = runnerType
+        }
+    }
 
     console.log('Request running job:', textId)
     console.log('Student repo:', student_repo)
     console.log('Tester repo:', tester_repo)
+    console.log('Runner:', runner)
 
     try {
-        const result = await RunnerServices.request({
-            id: textId,
-            token: textId,
-            tester_repo,
-            student_repo,
-        })
+        const result = await RunnerServices.request(
+            {
+                id: textId,
+                token: textId,
+                tester_repo,
+                student_repo,
+            },
+            runner
+        )
 
         if (result) {
             await Job.updateOne(
@@ -138,7 +162,7 @@ exports.runNextJob = async () => {
 
             EventServices.emit('JOB_PROCESSING', nextJob)
 
-            await IssueProcessActions.markProcessing(issue)
+            await IssueProcessActions.markProcessing(issueId)
         }
     } catch (e) {
         console.error('Request job error:', e.message)
