@@ -57,13 +57,20 @@ const _validateDeadline = deadline => {
 }
 
 const _validateArgs = (args = {}) => {
-    const defaultArgs = {}
+    const defaultArgs = {
+        runner: 'node-http'
+    }
 
-    const {url, deadline} = Object.assign({}, defaultArgs, args)
+    const {url, deadline, runner} = Object.assign({}, defaultArgs, args)
     const {owner, repo} = _parseGitHubUrl(url)
     const vDeadline = _validateDeadline(deadline)
 
+    if (!runner) {
+        throw new Error('Runner is invalid.')
+    }
+
     return {
+        runner,
         owner,
         repo,
         deadline: vDeadline,
@@ -71,7 +78,7 @@ const _validateArgs = (args = {}) => {
 }
 
 exports.create = async (args = {}) => {
-    const {owner, repo, deadline} = _validateArgs(args)
+    const {owner, repo, deadline, runner} = _validateArgs(args)
     const Contest = getModel('Contest')
 
     const exist = await Contest.findOne({
@@ -86,6 +93,7 @@ exports.create = async (args = {}) => {
     const newContest = new Contest({
         owner,
         repo,
+        runner,
         deadline
     })
 
