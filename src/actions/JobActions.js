@@ -33,7 +33,7 @@ exports.checkStuckJobs = async () => {
 
     const Job = getModel('Job')
 
-    const timeout = moment().subtract(5, 'minutes').valueOf()
+    const timeout = moment().subtract(2, 'minutes').valueOf()
     const stuckJobs = await Job
         .find({
             status: 'processing',
