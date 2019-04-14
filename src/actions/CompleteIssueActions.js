@@ -2,6 +2,23 @@ const {getModel} = require('../connections/database')
 const TaskActions = require('./TaskActions')
 const EventServices = require('../services/EventServices')
 
+exports.reopenIssue = async job => {
+    const {issue: issueId} = Object.assign({}, job)
+    const Issue = getModel('Issue')
+
+    await Issue.updateOne(
+        {_id: issueId},
+        {
+            $set: {
+                status: 'pending',
+                updated: Date.now(),
+            }
+        }
+    )
+
+    return true
+}
+
 exports.completeIssueWithJob = async (job) => {
     const {is_pass, message, issue: issueId} = Object.assign({}, job)
 

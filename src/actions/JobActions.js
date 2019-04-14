@@ -81,6 +81,9 @@ exports.checkStuckJobs = async () => {
             }
         })
 
+        const updated = await Job.findOne({_id}).lean()
+        await CompleteIssueActions.reopenIssue(updated)
+
         return true
     }, {concurrency: 1})
 
