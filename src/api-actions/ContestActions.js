@@ -113,12 +113,23 @@ exports.getListIssues = async (contestId) => {
             select: ''
         })
         .sort({
-            created: 1
+            created: -1
         })
         .lean()
 
+    const vIssues = issues.map((issue) => {
+        const {camper} = issue
+        if (!camper || !camper.username) return issue
+
+        const {username} = camper
+        const url = `https://github.com/${username}`
+        const vCamper = Object.assign({}, camper, {url})
+
+        return Object.assign({}, issue, {camper: vCamper})
+    })
+
 
     return {
-        issues,
+        issues: vIssues,
     }
 }
