@@ -27,10 +27,23 @@ const _syncContests = async () => {
     }
 }
 
-const _register = async () => {
-    scheduler.scheduleJob(EVERY_MINUTE, async () => {
+const _processJob = async () => {
+    try {
         await job.processJob()
-    })
+        await _delay(5000)
+
+        return _processJob()
+    } catch (error) {
+        await _delay(5 * 60 * 1000)
+
+        return _processJob()
+    }
+}
+
+const _register = async () => {
+    setTimeout(async () => {
+        await _processJob()
+    }, 2000)
 
     scheduler.scheduleJob(EVERY_MINUTE, async () => {
         await job.checkStuckJobs()
