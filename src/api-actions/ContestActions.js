@@ -18,7 +18,9 @@ exports.getListContests = async (args = {}) => {
 
     const {page, limit} = _validateArgs(args)
     const skip = (page - 1) * limit
-    const query = {}
+    const query = {
+        status: 'active'
+    }
 
     const _findContests = Contest.find(query)
         .select('')
